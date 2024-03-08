@@ -1,6 +1,6 @@
 # Maintainer: Vilmar Catafesta <vcatafesta@gmail.com>
 
-pkgname=void-wallpapers-xfce
+pkgname=chili-void-wallpapers
 pkgdesc="Set of wallpapers for XFCE"
 # depends=('')
 # makedepends=('')
