@@ -1,8 +1,7 @@
 name: Criar release e arquivo .tar.gz
 
 env:
-# PACKAGE_NAME: chili-void-wallpapers.tar.gz
-  PACKAGE_NAME: ${{ github.repository }}.tar.gz
+  PACKAGE_NAME: ${{ env.REPOSITORY_NAME }}.tar.gz
 
 # Gatilhos para o workflow
 on:
@@ -38,10 +37,20 @@ jobs:
         id: time
         run: echo "::set-output name=time::$(date +'%Y.%m.%d-%H%M')"
 
+  # Job para definir o nome do repositório
+  set-repo-name:
+    runs-on: ubuntu-latest
+    outputs:
+      REPOSITORY_NAME: ${{ steps.get-repo-name.outputs.repo_name }}
+    steps:
+      - name: Obter nome do repositório
+        id: get-repo-name
+        run: echo "::set-output name=repo_name::$(basename $GITHUB_REPOSITORY)"
+
   # Job para preparar a release
   prepare-release:
     runs-on: ubuntu-20.04  # Define a máquina virtual a ser usada
-    needs: [get-time]  # Depende do job get-time para obter a hora atual
+    needs: [get-time, set-repo-name]  # Depende do job get-time para obter a hora atual e do job set-repo-name para obter o nome do repositório
     steps:
       - name: Checkout do código
         uses: actions/checkout@v2
