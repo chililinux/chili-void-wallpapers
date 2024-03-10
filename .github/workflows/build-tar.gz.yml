@@ -48,18 +48,20 @@ jobs:
   prepare-release:
     runs-on: ubuntu-20.04  # Define a máquina virtual a ser usada
     needs: [get-time, set-repo-name]  # Depende do job get-time para obter a hora atual e do job set-repo-name para obter o nome do repositório
+    env:
+      REPO_NAME: ${{ needs.set-repo-name.outputs.REPOSITORY_NAME }}
     steps:
       - name: Checkout do código
         uses: actions/checkout@v2
 
       - name: Criar arquivo .tar.gz
-        run: tar -cf ${{ steps.set-repo-name.outputs.REPOSITORY_NAME }}.tar.gz .
+        run: tar -cf $REPO_NAME.tar.gz .
 
       - name: Salvar arquivo .tar.gz como artefato
         uses: actions/upload-artifact@v2
         with:
           name: arquivos
-          path: ${{ steps.set-repo-name.outputs.REPOSITORY_NAME }}.tar.gz
+          path: $REPO_NAME.tar.gz
 
       - name: Criar release
         id: create_release
@@ -81,6 +83,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.ORGANIZATION_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./${{ steps.set-repo-name.outputs.REPOSITORY_NAME }}.tar.gz
-          asset_name: ${{ steps.set-repo-name.outputs.REPOSITORY_NAME }}.tar.gz
+          asset_path: ./${REPO_NAME}.tar.gz
+          asset_name: ${REPO_NAME}.tar.gz
           asset_content_type: application/gzip
